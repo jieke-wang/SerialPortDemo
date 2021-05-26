@@ -9,4 +9,8 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="System.IO.Ports" Version="5.0.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+  </ItemGroup>
 </Project>

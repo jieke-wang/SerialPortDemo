@@ -20,8 +20,10 @@ namespace ProducerDemo
         private SerialPort _serialPort;
         private long _sendCounter = 0;
         private long _errorCounter = 0;
+        private long _retryCounter = 0;
         private byte lineCharByte = Encoding.UTF8.GetBytes("\n")[0];
         private byte emptyCharByte = Encoding.UTF8.GetBytes("\0")[0];
+        private TaskCompletionSource<string> _taskCompletionSource;
 
         public Worker3(ILogger<Worker3> logger, IOptions<SerialPortSetting> options)
         {
@@ -34,8 +36,15 @@ namespace ProducerDemo
             _serialPort = new SerialPort(_options.Value.PortName, _options.Value.BaudRate, _options.Value.Parity, _options.Value.DataBits, _options.Value.StopBits);
             _serialPort.Encoding = Encoding.UTF8;
             _serialPort.NewLine = "\n";
+            _serialPort.DataReceived += SerialPort_DataReceivedAsync;
 
             return base.StartAsync(cancellationToken);
+        }
+
+        private void SerialPort_DataReceivedAsync(object sender, SerialDataReceivedEventArgs e)
+        {
+            string msg = _serialPort.ReadLine().Trim('\0');
+            _taskCompletionSource?.TrySetResult(msg);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -43,8 +52,8 @@ namespace ProducerDemo
             await Task.Factory.StartNew(async () =>
             {
                 //string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "baseinfo-min.json"));
-                string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "demo.json"));
-                //string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "demo2.json"));
+                //string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "demo.json"));
+                string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "demo2.json"));
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     try
@@ -56,7 +65,7 @@ namespace ProducerDemo
                             _serialPort.DiscardOutBuffer();
                         }
 
-                        _logger.LogInformation($"\n\n发送次数: {++_sendCounter}; 错误次数: {_errorCounter}");
+                        _logger.LogInformation($"\n\n发送次数: {++_sendCounter}; 错误次数: {_errorCounter}; 重试次数: {_retryCounter}");
                         DateTime startTime = DateTime.Now;
 
                         _logger.LogInformation($"发送字节大小: {msg.Length}");
@@ -68,10 +77,29 @@ namespace ProducerDemo
                                 _logger.LogWarning($"重试次数: {retryCounter}");
                             _serialPort.DiscardInBuffer();
                             _serialPort.WriteLine(msg);
-                            string result = _serialPort.ReadLine();
+
+                            using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+                            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(3));
+                            _taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+                            string result = string.Empty;
+                            using (cancellationTokenSource.Token.Register(() => _taskCompletionSource.SetCanceled()))
+                            {
+                                try
+                                {
+                                    result = await _taskCompletionSource.Task.ConfigureAwait(false);
+                                }
+                                catch (TaskCanceledException)
+                                {
+                                    result = "-1";
+                                }
+                            }
+
                             if (result == "1") break;
                             retryCounter++;
                             await Task.Delay(1000, stoppingToken);
+                            _logger.LogWarning($"重试: {retryCounter}轮");
+                            _retryCounter++;
                         }
 
                         _logger.LogInformation($"耗时: {DateTime.Now - startTime}");

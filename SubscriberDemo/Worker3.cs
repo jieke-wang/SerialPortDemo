@@ -50,7 +50,7 @@ namespace SubscriberDemo
                 //_logger.LogInformation($"\n\n{msg}\n\n");
                 _logger.LogInformation($"接收字节大小: {msg.Length}");
 
-                _serialPort.DiscardOutBuffer();
+                //_serialPort.DiscardOutBuffer();
                 using JsonDocument jsonDocument = JsonDocument.Parse(msg);
                 _serialPort.WriteLine("1");
             }

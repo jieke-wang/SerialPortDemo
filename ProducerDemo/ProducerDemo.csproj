@@ -10,5 +10,9 @@
     <PackageReference Include="System.IO.Ports" Version="5.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+  </ItemGroup>
+
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 </Project>

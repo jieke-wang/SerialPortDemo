@@ -1,0 +1,32 @@
+https://www.codeproject.com/Articles/20929/Simple-Modbus-Protocol-in-C-NET-2-0
+
+C# Modbus TCP、Modbus RTU、Modbus ASCII
+https://blog.csdn.net/qq_31371155/article/details/83109851
+https://www.twblogs.net/a/5bca908e2b7177735197b7b1
+链接：https://pan.baidu.com/s/120eazEADKeruYyU70vh2Yg
+提取码：5uwd
+
+CSharp/C#标准ModbusRTU和ModbusTCP扩展类库源代码工业通信
+https://blog.csdn.net/u012168125/article/details/108670025
+
+Modbus、Modbus TCP、Modbus RTU和Modbus ASCII的区别
+https://blog.csdn.net/muguajia/article/details/43735517/
+
+如何快速掌握plc或工控机与其他设备的modbus通讯协议？包括格式与实际过程
+https://www.zhihu.com/question/23550021
+
+https://github.com/VictorCher/ModbusASCII
+https://github.com/anivid/Termodat
+https://github.com/hasalasri/MODBUS-ASCII-MASTER
+https://github.com/Southeastofstar/Modbus-Ascii-RTU-TCP-UDP
+
+https://code.google.com/archive/p/nmodbus/downloads
+
+
+C# 串口通信—传输文件测试
+https://www.cnblogs.com/s0611163/p/4137943.html
+
+C#串口通信传输文件实例（带注释）
+https://blog.csdn.net/CGS_______/article/details/86299084
+
+https://github.com/dotnet/runtime
