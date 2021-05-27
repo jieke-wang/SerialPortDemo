@@ -60,8 +60,8 @@ namespace ProducerDemo
             await Task.Factory.StartNew(async () =>
             {
                 //string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "baseinfo-min.json"));
-                string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "demo.json"));
-                //string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "demo2.json"));
+                //string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "demo.json"));
+                string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "demo2.json"));
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
@@ -81,6 +81,8 @@ namespace ProducerDemo
                         byte[] data = Encoding.UTF8.GetBytes($"{FrameHeader}{msg}{FrameTail}");
                         _logger.LogInformation($"发送字节大小: {data.Length - FrameHeader.Length - FrameTail.Length}");
 
+                        double secondsTimeout = Math.Ceiling(data.Length * 8 / (double)_options.Value.BaudRate) + 2;
+
                         int retryCounter = 0;
                         while (true)
                         {
@@ -89,7 +91,8 @@ namespace ProducerDemo
                             _serialPort.Write(data, 0, data.Length);
 
                             using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-                            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(3));
+                            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(secondsTimeout));
+                            //cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(3));
                             //cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(3));
                             _taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
