@@ -56,7 +56,7 @@ namespace ProducerDemo
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await Task.Delay(2000);
+            //await Task.Delay(2000);
             await Task.Factory.StartNew(async () =>
             {
                 //string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "baseinfo-min.json"));
@@ -89,8 +89,8 @@ namespace ProducerDemo
                             _serialPort.Write(data, 0, data.Length);
 
                             using CancellationTokenSource cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-                            //cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(3));
-                            cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(3));
+                            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(3));
+                            //cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(3));
                             _taskCompletionSource = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
                             string result = string.Empty;
