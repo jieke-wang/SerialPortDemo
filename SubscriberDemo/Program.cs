@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace SubscriberDemo
 {
@@ -17,6 +18,11 @@ namespace SubscriberDemo
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureLogging((context, logBuilder) =>
+                {
+                    logBuilder.ClearProviders();
+                    logBuilder.AddLog4Net();
+                })
                 .ConfigureServices((hostContext, services) =>
                 {
                     services

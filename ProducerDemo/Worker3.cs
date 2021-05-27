@@ -21,8 +21,9 @@ namespace ProducerDemo
         private long _sendCounter = 0;
         private long _errorCounter = 0;
         private long _retryCounter = 0;
-        private byte lineCharByte = Encoding.UTF8.GetBytes("\n")[0];
-        private byte emptyCharByte = Encoding.UTF8.GetBytes("\0")[0];
+        private long _timeoutCounter = 0;
+        //private byte lineCharByte = Encoding.UTF8.GetBytes("\n")[0];
+        //private byte emptyCharByte = Encoding.UTF8.GetBytes("\0")[0];
         private TaskCompletionSource<string> _taskCompletionSource;
 
         public Worker3(ILogger<Worker3> logger, IOptions<SerialPortSetting> options)
@@ -65,7 +66,7 @@ namespace ProducerDemo
                             _serialPort.DiscardOutBuffer();
                         }
 
-                        _logger.LogInformation($"\n\n发送次数: {++_sendCounter}; 错误次数: {_errorCounter}; 重试次数: {_retryCounter}");
+                        _logger.LogInformation($"\n\n发送次数: {++_sendCounter}; 错误次数: {_errorCounter}; 重试次数: {_retryCounter}; 超时次数: {_timeoutCounter}");
                         DateTime startTime = DateTime.Now;
 
                         _logger.LogInformation($"发送字节大小: {msg.Length}");
@@ -89,9 +90,11 @@ namespace ProducerDemo
                                 {
                                     result = await _taskCompletionSource.Task.ConfigureAwait(false);
                                 }
-                                catch (TaskCanceledException)
+                                catch (TaskCanceledException ex)
                                 {
+                                    _logger.LogError(ex, ex.Message);
                                     result = "-1";
+                                    _timeoutCounter++;
                                 }
                             }
 
@@ -104,7 +107,7 @@ namespace ProducerDemo
 
                         _logger.LogInformation($"耗时: {DateTime.Now - startTime}");
                         //await Task.Delay(100, stoppingToken);
-                        await Task.Delay(10, stoppingToken);
+                        //await Task.Delay(10, stoppingToken);
                         //await Task.Delay(0, stoppingToken);
                         //await Task.Delay(1000, stoppingToken);
                     }
