@@ -30,3 +30,6 @@ C#串口通信传输文件实例（带注释）
 https://blog.csdn.net/CGS_______/article/details/86299084
 
 https://github.com/dotnet/runtime
+https://github.com/dotnet/runtime/blob/main/src/libraries/System.IO.Ports/src/System/IO/Ports/SerialPort.cs
+
+https://www.wiktorzychla.com/2008/11/log4net-and-appenders-for-different.html

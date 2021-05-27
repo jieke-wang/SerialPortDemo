@@ -14,15 +14,17 @@ using Microsoft.Extensions.Options;
 
 namespace SubscriberDemo
 {
-    public class Worker3 : BackgroundService, IDisposable
+    public class Worker4 : BackgroundService, IDisposable
     {
-        private readonly ILogger<Worker3> _logger;
+        private readonly ILogger<Worker4> _logger;
         private readonly IOptions<SerialPortSetting> _options;
         private SerialPort _serialPort;
         private long _reciveCounter = 0;
         private long _errorCounter = 0;
+        private const string FrameHeader = "\0\0";
+        private const string FrameTail = "\n\n";
 
-        public Worker3(ILogger<Worker3> logger, IOptions<SerialPortSetting> options)
+        public Worker4(ILogger<Worker4> logger, IOptions<SerialPortSetting> options)
         {
             _logger = logger;
             _options = options;
@@ -32,7 +34,7 @@ namespace SubscriberDemo
         {
             _serialPort = new SerialPort(_options.Value.PortName, _options.Value.BaudRate, _options.Value.Parity, _options.Value.DataBits, _options.Value.StopBits);
             _serialPort.Encoding = Encoding.UTF8;
-            _serialPort.NewLine = "\n";
+            //_serialPort.NewLine = "\n";
             _serialPort.DataReceived += SerialPort_DataReceivedAsync;
 
             return base.StartAsync(cancellationToken);
@@ -46,19 +48,22 @@ namespace SubscriberDemo
             string msg = string.Empty;
             try
             {
-                msg = _serialPort.ReadLine().Trim('\0');
-                //_logger.LogInformation($"\n\n{msg}\n\n");
-                _logger.LogInformation($"接收字节大小: {msg.Length}");
+                msg = _serialPort.ReadTo(FrameTail).Trim('\0');
+                //msg = _serialPort.ReadTo(FrameTail);
+                msg = msg.Replace(FrameHeader, FrameTail);
+                int frameHeaderPosition = msg.IndexOf(FrameTail);
+                if (frameHeaderPosition > -1)
+                    msg = msg.Substring(frameHeaderPosition + FrameTail.Length);
+                _logger.LogInformation($"接收字节大小: {Encoding.UTF8.GetByteCount(msg)}");
 
-                //_serialPort.DiscardOutBuffer();
                 using JsonDocument jsonDocument = JsonDocument.Parse(msg);
-                _serialPort.WriteLine("1");
+                _serialPort.Write($"{FrameHeader}1{FrameTail}");
             }
             catch (Exception ex)
             {
                 _errorCounter++;
                 _logger.LogError(ex, ex.Message);
-                _serialPort.WriteLine("-1");
+                _serialPort.Write($"{FrameHeader}-1{FrameTail}");
                 if (string.IsNullOrWhiteSpace(msg) == false)
                     _logger.LogError(msg);
             }
