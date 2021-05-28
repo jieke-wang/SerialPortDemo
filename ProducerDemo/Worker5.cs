@@ -84,8 +84,8 @@ namespace ProducerDemo
             await Task.Factory.StartNew(async () =>
             {
                 //string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "baseinfo-min.json"));
-                string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "demo.json"));
-                //string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "demo2.json"));
+                //string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "demo.json"));
+                string msg = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "demo2.json"));
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
@@ -179,7 +179,7 @@ namespace ProducerDemo
                     else
                     {
                         //await Task.Delay(100, stoppingToken);
-                        await Task.Delay(10, stoppingToken);
+                        //await Task.Delay(10, stoppingToken);
                         //await Task.Delay(0, stoppingToken);
                         //await Task.Delay(1000, stoppingToken);
                     }
