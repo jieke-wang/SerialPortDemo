@@ -40,7 +40,8 @@ namespace SubscriberDemo
                     //services.AddHostedService<Worker>();
                     //services.AddHostedService<Worker2>();
                     //services.AddHostedService<Worker3>();
-                    services.AddHostedService<Worker4>();
+                    //services.AddHostedService<Worker4>();
+                    services.AddHostedService<Worker5>();
                 });
     }
 }
