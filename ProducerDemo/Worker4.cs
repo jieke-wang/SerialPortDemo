@@ -122,7 +122,7 @@ namespace ProducerDemo
                         //await Task.Delay(100, stoppingToken);
                         //await Task.Delay(10, stoppingToken);
                         //await Task.Delay(0, stoppingToken);
-                        //await Task.Delay(1000, stoppingToken);
+                        await Task.Delay(1000, stoppingToken);
                     }
                     catch (Exception ex)
                     {
